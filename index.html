@@ -31,12 +31,16 @@
     <textarea id="input" rows="20" cols="150" spellcheck="false"></textarea>
     <script>
         function getExample(num) {
-            if (num == 1) {
+            if (num == 0) {
+                document.getElementById('input').value = "//PRESS BUILD TO EVALUATE EXPRESSION\n\nlet _exp_ = Hello\n_exp_ World!"
+            } else if (num == 1) {
                 document.getElementById('input').value = "// Resource names are in the format <prefix>-<department>-<name>\n// Extract the department name, or a default value if the format doesn't match\n\nlet _default_ = 'default'\nlet _name_ = field('name')\nlet _nameSegments_ = split(_name_, '-')\n\nlet _hasDepartmentName_ = equals(length(_nameSegments_), 3)\nlet _departmentName_ = first(skip(_nameSegments_, 1))\n\n\[if(_hasDepartmentName_, _departmentName_, _default_)]"
             } else if (num == 2) {
                 document.getElementById('input').value = "\/\/ Check if a port number provided by a parameter is within an NSG rule destination port range\r\n\r\nlet _targetPort_ = parameters(\'targetPort\')\r\nlet _portRange_ = field(\'Microsoft.Network\/networkSecurityGroups\/securityRules\/destinationAddressPrefix\')\r\n\r\nlet _splittedPortRange_ = split(_portRange_, \'-\')\r\nlet _start_ = int(first(_splittedPortRange_))\r\nlet _end_ = int(last(_splittedPortRange_))\r\n\r\nlet _isGreaterOrEqualsToStartPort_ = greaterOrEquals(_targetPort_, _start_)\r\nlet _isLessOrEqualsToStartPort_ = lessOrEquals(_targetPort_, _end_)\r\n\r\n[and(_isGreaterOrEqualsToStartPort_, _isLessOrEqualsToStartPort_)]"
             }
         }
+
+        getExample(0);
     </script>
     </br>
     <input type="button" onclick="document.getElementById('output').innerText = build(document.getElementById('input').value)" value="Build">

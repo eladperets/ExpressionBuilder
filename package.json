@@ -6,7 +6,7 @@
     "typescript": "3.8.3"
   },
   "scripts": {
-    "build": "rd .\\out /s /q && mkdir .\\out && copy .\\index.html .\\out\\ && copy .\\style.css .\\out\\ && tsc .\\expression.ts .\\parser.ts --target es5 --lib es2015,dom --outDir ./out "
+    "build": "rd .\\out /s /q && mkdir .\\out && copy .\\index.html .\\out\\ && copy .\\style.css .\\out\\ && tsc"
   },
   "repository": {
     "type": "git",
