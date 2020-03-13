@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>String Expression Builder</title>
+    <script src="./expression.js"></script>
+    <script src="./parser.js"></script>
+    <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+    <h1>String Expression Builder</h1>
+    While it can have many uses, this tool was written as a way to write complex <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions">template functions</a> used in Azure Resource Manager and Azure Policy.<br>
+
+    <h2>Usage:</h2>
+    <p>
+        Expressions are defined in the following format: "let _{expressionName}_ = {expression}"<br>
+        <strong>Don't use '_' anywhere else</strong>
+    </p>
+    <p>
+        Expressions can refer to previously declared expressions, For example:<br> let _parameterName_ = 'param'<br> let _parameterAccessor_ = parameters(_parameterName_)<br>
+    </p>
+    <p>
+        The last statemnet has to be an expression (without 'let'). It can refer to any previously declared expressions.<br> For example, [_parameterAccessor_] will be resolved to [parameters('param')]<br>
+    </p>
+    <p>
+        Lines starting with '//' are ignored
+    </p>
+    <input type="button" onclick="getExample(1)" value="Azure Policy Example- Parse resource name">
+    <input type="button" onclick="getExample(2)" value="Azure Policy Example- Check if a port is in range"><br>
+    <textarea id="input" rows="20" cols="150" spellcheck="false"></textarea>
+    <script>
+        function getExample(num) {
+            if (num == 1) {
+                document.getElementById('input').value = "// Resource names are in the format <prefix>-<department>-<name>\n// Extract the department name, or a default value if the format doesn't match\n\nlet _default_ = 'default'\nlet _name_ = field('name')\nlet _nameSegments_ = split(_name_, '-')\n\nlet _hasDepartmentName_ = equals(length(_nameSegments_), 3)\nlet _departmentName_ = first(skip(_nameSegments_, 1))\n\n\[if(_hasDepartmentName_, _departmentName_, _default_)]"
+            } else if (num == 2) {
+                document.getElementById('input').value = "\/\/ Check if a port number provided by a parameter is within an NSG rule destination port range\r\n\r\nlet _targetPort_ = parameters(\'targetPort\')\r\nlet _portRange_ = field(\'Microsoft.Network\/networkSecurityGroups\/securityRules\/destinationAddressPrefix\')\r\n\r\nlet _splittedPortRange_ = split(_portRange_, \'-\')\r\nlet _start_ = int(first(_splittedPortRange_))\r\nlet _end_ = int(last(_splittedPortRange_))\r\n\r\nlet _isGreaterOrEqualsToStartPort_ = greaterOrEquals(_targetPort_, _start_)\r\nlet _isLessOrEqualsToStartPort_ = lessOrEquals(_targetPort_, _end_)\r\n\r\n[and(_isGreaterOrEqualsToStartPort_, _isLessOrEqualsToStartPort_)]"
+            }
+        }
+    </script>
+    </br>
+    <input type="button" onclick="document.getElementById('output').innerText = build(document.getElementById('input').value)" value="Build">
+    <h3>Result:</h3>
+    <textarea id="output" rows="5" cols="150" disabled></textarea>
+</body>
+
+</html>

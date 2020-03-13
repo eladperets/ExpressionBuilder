@@ -1,0 +1,18 @@
+{
+  "name": "expressionbuilder",
+  "version": "1.0.0",
+  "description": "String expression builder",
+  "dependencies": {
+    "typescript": "3.8.3"
+  },
+  "scripts": {
+    "build": "rd .\\out /s /q && mkdir .\\out && copy .\\index.html .\\out\\ && copy .\\style.css .\\out\\ && tsc .\\expression.ts .\\parser.ts --target es5 --lib es2015,dom --outDir ./out "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eladperets/ExpressionBuilder.git"
+  },
+  "license": "MIT",
+  "author": "Elad Perets",
+  "homepage": "https://github.com/eladperets/ExpressionBuilder#readme"
+}
