@@ -1,38 +1,74 @@
-class ParsingResult {
-  declarations: Expression[];
-  expression: Expression;
-
-  constructor(declarations: Expression[], expression: Expression) { this.declarations = declarations; this.expression = expression; }
-}
-
 class Parser {
-  public parse(rawString: string): ParsingResult {
-    let rows = rawString
-      .split('\n')
-      .filter(row => !row.startsWith('//'))
-      .map(r => r.trim());
+  public static parse(str: string): Expression[] {
+    let state = State.GetCommand;
+    let stringReader = new StringReader(str);
+    let expressions: Expression[] = [];
+    let currentExpression: Expression;
 
-    let declarations = rows
-      .filter(row => row.startsWith('let '))
-      .map(row => {
-        let expressionName = row.substring(4, row.indexOf('=')).trim();
-        let expressionValue = row.substring(row.indexOf('=') + 1).trim();
+    while (!stringReader.isFinished()) {
+      switch (state) {
+        case (State.GetCommand):
+          stringReader.skip(' ');
+          let cmdPrefix = stringReader.readNext();
+          if (cmdPrefix == '#') {
+            state = State.GetCommandName;
+          } else {
+            throw new Error("Expected '#'' but found '" + cmdPrefix + "' instead");
+          }
 
-        return new Expression(expressionName, expressionValue);
-      });
+          break;
 
-    let expression = rows
-      .filter(row => !row.startsWith('let '))
-      .pop();
+        case (State.GetCommandName):
+          let cmd = stringReader.readUntil(' ').trim();
+          switch (cmd) {
+            case "def":
+              currentExpression = new Expression();
+              currentExpression.cmd = cmd;
+              state = State.GetExpressionName;
+              break;
 
-    return new ParsingResult(declarations, new Expression("final", expression));
+            case "eval":
+              currentExpression = new Expression();
+              currentExpression.cmd = cmd;
+              state = State.GetExpressionValue;
+              break;
+
+            default:
+              throw new Error("Enountered unsupported command: '" + cmd + "'");
+          }
+
+          break;
+
+        case (State.GetExpressionName):
+          stringReader.skip(' ');
+          let expressionName = stringReader.readUntil(' ').trim();
+
+          if (expressionName.length == 0) {
+            throw new Error("Expected expression name but found EOF");
+          }
+
+          currentExpression.name = expressionName;
+          state = State.GetExpressionValue;
+
+          break;
+
+        case (State.GetExpressionValue):
+          stringReader.skip(' ');
+
+          // Read until the next command
+          currentExpression.value = stringReader.readUntil('#').trim();
+          expressions.push(currentExpression);
+          state = State.GetCommand
+      }
+    }
+
+    return expressions;
   }
 }
 
-function build(rawString: string): string {
-  let parser = new Parser();
-  let parserResult = parser.parse(rawString);
-  var result = parserResult.expression.build(parserResult.declarations);
-  console.log(result);
-  return result;
+enum State {
+  GetCommand,
+  GetCommandName,
+  GetExpressionName,
+  GetExpressionValue,
 }

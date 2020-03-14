@@ -4,48 +4,43 @@
 <head>
     <title>String Expression Builder</title>
     <script src="./expression.js"></script>
+    <script src="./expressionEvaluation.js"></script>
+    <script src="./stringReader.js"></script>
     <script src="./parser.js"></script>
     <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 
 <body>
     <h1>String Expression Builder</h1>
+    This tool helps writing string expressions in a similiar way to how C macros work.<br>
     While it can have many uses, this tool was written as a way to write complex <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions">template functions</a> used in Azure Resource Manager and Azure Policy.<br>
 
     <h2>Usage:</h2>
-    <p>
-        Expressions are defined in the following format: "let _{expressionName}_ = {expression}"<br>
-        <strong>Don't use '_' anywhere else</strong>
-    </p>
-    <p>
-        Expressions can refer to previously declared expressions, For example:<br> let _parameterName_ = 'param'<br> let _parameterAccessor_ = parameters(_parameterName_)<br>
-    </p>
-    <p>
-        The last statemnet has to be an expression (without 'let'). It can refer to any previously declared expressions.<br> For example, [_parameterAccessor_] will be resolved to [parameters('param')]<br>
-    </p>
-    <p>
-        Lines starting with '//' are ignored
-    </p>
-    <input type="button" onclick="getExample(1)" value="Azure Policy Example- Parse resource name">
-    <input type="button" onclick="getExample(2)" value="Azure Policy Example- Check if a port is in range"><br>
+    <ul>
+        <li>Define expressions using the #def command (<i>#def HI Hello</i>)</li>
+        <li>Expressions can refer to previously defined expressions (<i>#def HI_WORLD HI World</i>)</li>
+        <li>
+            The last command must be an #eval command that will evaluate the final expression:<br>
+            <ul>
+                <li>#eval can contain any free text.</li>
+                <li>#eval can refer to any of the previously defined expressions.</li>
+            </ul>
+        </li>
+      </ul>
     <textarea id="input" rows="20" cols="150" spellcheck="false"></textarea>
     <script>
-        function getExample(num) {
-            if (num == 0) {
-                document.getElementById('input').value = "//PRESS BUILD TO EVALUATE EXPRESSION\n\nlet _exp_ = Hello\n_exp_ World!"
-            } else if (num == 1) {
-                document.getElementById('input').value = "// Resource names are in the format <prefix>-<department>-<name>\n// Extract the department name, or a default value if the format doesn't match\n\nlet _default_ = 'default'\nlet _name_ = field('name')\nlet _nameSegments_ = split(_name_, '-')\n\nlet _hasDepartmentName_ = equals(length(_nameSegments_), 3)\nlet _departmentName_ = first(skip(_nameSegments_, 1))\n\n\[if(_hasDepartmentName_, _departmentName_, _default_)]"
-            } else if (num == 2) {
-                document.getElementById('input').value = "\/\/ Check if a port number provided by a parameter is within an NSG rule destination port range\r\n\r\nlet _targetPort_ = parameters(\'targetPort\')\r\nlet _portRange_ = field(\'Microsoft.Network\/networkSecurityGroups\/securityRules\/destinationAddressPrefix\')\r\n\r\nlet _splittedPortRange_ = split(_portRange_, \'-\')\r\nlet _start_ = int(first(_splittedPortRange_))\r\nlet _end_ = int(last(_splittedPortRange_))\r\n\r\nlet _isGreaterOrEqualsToStartPort_ = greaterOrEquals(_targetPort_, _start_)\r\nlet _isLessOrEqualsToStartPort_ = lessOrEquals(_targetPort_, _end_)\r\n\r\n[and(_isGreaterOrEqualsToStartPort_, _isLessOrEqualsToStartPort_)]"
-            }
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('expression')) {
+            document.getElementById('input').value = urlParams.get('expression');
+        } else {
+            document.getElementById('input').value = "#def HI Hello\n#def HI_WORLD HI World\n\n#eval HI_WORLD!!"   
         }
-
-        getExample(0);
     </script>
     </br>
-    <input type="button" onclick="document.getElementById('output').innerText = build(document.getElementById('input').value)" value="Build">
-    <h3>Result:</h3>
-    <textarea id="output" rows="5" cols="150" disabled></textarea>
+    <input type="button" onclick="document.getElementById('output').innerText = evaluateExpression(document.getElementById('input').value)" value="Evaluate">
+    <input type="button" onclick="document.getElementById('output').innerText = document.URL + '?expression=' + encodeURIComponent(document.getElementById('input').value)" value="Create Link">
+    <h3>Output:</h3>
+    <pre id="output" style="min-height:5em;border-style:solid;overflow-x:auto;"></pre>
 </body>
 
 </html>

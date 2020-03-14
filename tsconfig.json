@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "target": "ES5",
-        "lib": [ "ES2015", "DOM" ],
+        "target": "ES2015",
         "outDir": "./out",
-        "module": "system",
+        "module": "None",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -12,6 +11,7 @@
         "*"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "out"
     ]
 }
