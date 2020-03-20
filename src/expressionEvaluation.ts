@@ -1,4 +1,4 @@
-function evaluateExpression(rawString: string): string {
+ export function evaluateExpression(rawString: string): string {
     let expressions = Parser.parse(rawString);
     console.log(expressions);
     let evalExpressions = Array.from(expressions.values()).filter(e => e.cmd == "eval");

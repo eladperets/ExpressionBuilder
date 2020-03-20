@@ -4,7 +4,7 @@
 <head>
     <title>String Expression Builder</title>
     <script src="./expression.js"></script>
-    <script src="./expressionEvaluation.js"></script>
+    <script type="module" src="./expressionEvaluation.js"></script>
     <script src="./stringReader.js"></script>
     <script src="./parser.js"></script>
     <link rel="stylesheet" type="text/css" href="./style.css">
@@ -28,7 +28,23 @@
         </li>
       </ul>
     <textarea id="input" rows="20" cols="150" spellcheck="false"></textarea>
-    <script>
+    </br>
+    <input id="evaluate" type="button" value="Evaluate">
+    <input id="create_link" type="button" value="Create Link">
+    <script type="module">
+        import { evaluateExpression } from './expressionEvaluation.js'
+        
+        function setEvaluatedExpression() {
+            document.getElementById('output').innerText = evaluateExpression(document.getElementById('input').value);
+        }
+
+        function createLink() {
+            document.getElementById('output').innerText = document.URL.split('?')[0] + '?expression=' + encodeURIComponent(document.getElementById('input').value);
+        }
+
+        document.getElementById('evaluate').onclick = setEvaluatedExpression;
+        document.getElementById('create_link').onclick = createLink;
+
         var urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('expression')) {
             document.getElementById('input').value = urlParams.get('expression');
@@ -36,9 +52,6 @@
             document.getElementById('input').value = "#def HI Hello\n#def HI_WORLD HI World\n\n#eval HI_WORLD!!"   
         }
     </script>
-    </br>
-    <input type="button" onclick="document.getElementById('output').innerText = evaluateExpression(document.getElementById('input').value)" value="Evaluate">
-    <input type="button" onclick="document.getElementById('output').innerText = document.URL.split('?')[0] + '?expression=' + encodeURIComponent(document.getElementById('input').value)" value="Create Link">
     <h3>Output:</h3>
     <pre id="output" style="min-height:5em;border-style:solid;overflow-x:auto;"></pre>
 </body>
