@@ -2,11 +2,12 @@
   "name": "expressionbuilder",
   "version": "1.0.0",
   "description": "String expression builder",
-  "dependencies": {
-    "typescript": "3.8.3"
-  },
+  "dependencies": {},
   "scripts": {
-    "build": "rd .\\out /s /q && mkdir .\\out && copy .\\single_page_app\\index.html .\\out\\ && copy .\\single_page_app\\style.css .\\out\\ && tsc"
+    "clean": "(if exist .\\out rd .\\out /s /q) && mkdir .\\out",
+    "fixImports": "powershell -command \" Get-ChildItem ./out -Filter *.js | Foreach-Object {$path = $_.FullName; (Get-Content $path) -replace 'from ''(.*)''','from ''$1.js''' | Set-Content -Path $path }\"",
+    "build": "npm run clean && copy .\\single_page_app\\* .\\out\\ && tsc && npm run fixImports",
+    "test": "set TS_NODE_PROJECT=test.tsconfig.json&&mocha -r ts-node/register ./src/*.spec.ts"
   },
   "repository": {
     "type": "git",
@@ -14,5 +15,13 @@
   },
   "license": "MIT",
   "author": "Elad Perets",
-  "homepage": "https://github.com/eladperets/ExpressionBuilder#readme"
+  "homepage": "https://github.com/eladperets/ExpressionBuilder#readme",
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "typescript": "3.8.3",
+    "ts-node": "^8.8.1"
+  }
 }

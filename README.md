@@ -32,8 +32,14 @@ Pretty cool, right? with the expression builder we were able to:
 The tool is written in TypeScript (which is not my go-to language, generally i'm not a frontend guy, so forgive my ugly code). It's compliled to js and is used in a single page app hosted on Azure storage account [here](https://armexpressions.z13.web.core.windows.net/).
 
 ## Environment Setup
+(Works only in windows)
 ```
 npm install   
 npm run build
 ```
 The ./out folder will contain the single page app.
+
+Running tests:
+```
+npm run test
+```

@@ -1,4 +1,7 @@
-class Parser {
+import { Expression } from './expression';
+import { StringReader } from './stringReader';
+
+export class Parser {
   public static parse(str: string): Expression[] {
     let state = State.GetCommand;
     let stringReader = new StringReader(str);

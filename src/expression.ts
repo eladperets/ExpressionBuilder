@@ -1,4 +1,4 @@
-class Expression {
+export class Expression {
   public name: string;
   public cmd: string;
   public value: string;
@@ -8,7 +8,6 @@ class Expression {
   }
 
   private evaluateRec(str: string, expressions: Expression[]): string {
-    // This is VERY inefficient
     if (str.length == 0) {
       return str;
     }

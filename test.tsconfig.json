@@ -2,16 +2,15 @@
     "compilerOptions": {
         "target": "ES2015",
         "outDir": "./out",
-        "module": "ES2015",
+        "module": "CommonJS",
         "noImplicitAny": true,
         "removeComments": true,
-        "preserveConstEnums": true
+        "preserveConstEnums": true,
     },
     "include": [
         "src/**/*"
     ],
     "exclude": [
-        "src/*.spec.ts",
         "node_modules",
         "out"
     ]

@@ -1,4 +1,4 @@
-class StringReader {
+export class StringReader {
     #str: string;
     #currentInd = 0;
 
