@@ -1,7 +1,7 @@
 # ExpressionBuilder
 
 ## What is it good for?
-Expression builder is a tool that simplify the creation of complex string expressions using a C-macro-like syntax.
+Expression builder is a tool that simplifies the creation of complex string expressions using a C-macro-like syntax.
 It was written to help writing complex [Template Functions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions) used in [Azure Template Deployments](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/) and in [Azure Policy](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#policy-functions).
 
 For example, here's an expression that adds a prefix to a value in a template parameter if it's not already there:
