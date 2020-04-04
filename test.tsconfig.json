@@ -5,10 +5,11 @@
         "module": "CommonJS",
         "noImplicitAny": true,
         "removeComments": true,
-        "preserveConstEnums": true,
+        "preserveConstEnums": true
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "tests/**/*"
     ],
     "exclude": [
         "node_modules",
