@@ -4,9 +4,10 @@
 <head>
     <title>String Expression Builder</title>
     <script type="module" src="stringReader.js"></script>
-    <script type="module" src="parser.js"></script>
-    <script type="module" src="expression.js"></script>
-    <script type="module" src="expressionEvaluation.js"></script>
+    <script type="module" src="lexer.js"></script>
+    <script type="module" src="token.js"></script>
+    <script type="module" src="expressionDefinition.js"></script>
+    <script type="module" src="ast.js"></script>
     <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 
@@ -34,10 +35,14 @@
     <input id="evaluate" type="button" value="Evaluate">
     <input id="create_link" type="button" value="Create Link">
     <script type="module">
-        import { evaluateExpression } from './expressionEvaluation.js'
+        import { Expression } from './ast.js'
+        import { ParsedExpressionDefinitions } from './expressionDefinition.js'
+        import { TokenizedExpression } from './token.js'
+        import { Lexer } from './lexer.js'
         
         function setEvaluatedExpression() {
-            document.getElementById('output').innerText = evaluateExpression(document.getElementById('input').value);
+            var rawInput = document.getElementById('input').value;
+            document.getElementById('output').innerText = Lexer.Tokenize(rawInput).toExpressionDefinitions().toAST().evaluate();
         }
 
         function createLink() {
