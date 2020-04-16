@@ -31,9 +31,21 @@ export class Lexer {
                 case '\n':
                     tokenizedExpression.push(new Token(TokenType.Whitespace, stringReader.readNext()));
                     break;
+                case '/':
+                    stringReader.readNext();
+
+                    // If it is followed by another '/', it's a comment. Otherwise fall to default behavior
+                    if (!stringReader.isFinished() && stringReader.peekNext() == '/') {
+                        stringReader.readNext();
+                        tokenizedExpression.push(new Token(TokenType.CommentSpecifier, '//'));
+                        break;
+                    }
+                    else {
+                        buf.push('/');
+                    }
                 default:
                     // Chars that are not letters\numbers\underscore are stoered in a token of their own (mainly cause i'm lazy).
-                    if (!/[a-zA-Z0-9_]/.test(stringReader.peekNext())) {
+                    if (!stringReader.isFinished() && !/[a-zA-Z0-9_]/.test(stringReader.peekNext())) {
                         tokenizedExpression.push(new Token(TokenType.Value, stringReader.readNext()));
                         break;
                     }
