@@ -117,4 +117,19 @@ describe('Expression evaluation tests',
 
       expect(Lexer.Tokenize(expression).toExpressionDefinitions().toAST().evaluate()).to.equal("Hello World, Hello Universe, Hello 1 + 1 = 2 and some other stuff!");
     });
+
+    it('comments', () => {
+      const expression = '\
+        // Comment \n\
+        // Another comment \r\n\
+        // \n\
+        \n\
+        #def HELLO_PREFIX(A) Hello A // Comment \n\
+        #def FUNC(A, B, C) HELLO_PREFIX(A), HELLO_PREFIX(B), HELLO_PREFIX(C) // Comment\n\
+        \
+        #eval FUNC(World, Universe, 1 + 1 = 2 and some other stuff!) // Comment \n\
+        // Comment \n';
+
+      expect(Lexer.Tokenize(expression).toExpressionDefinitions().toAST().evaluate()).to.equal("Hello World, Hello Universe, Hello 1 + 1 = 2 and some other stuff!");
+    });
   });

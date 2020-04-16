@@ -12,6 +12,7 @@ export class Token {
 
 export enum TokenType {
     Whitespace,
+    CommentSpecifier,
     OpeningParenthesis,
     ClosingParenthesis,
     Comma,
@@ -48,7 +49,8 @@ export class TokenizedExpression {
         const expressionDefinitions: ExpressionDefinition[] = [];
         let currentExpression: ExpressionDefinition;
 
-        for (const tok of this.tokens) {
+        // Remove all comments and leading\trailing whitespaces from the token stream. This can be done as part of the state machine, but it'll make things more complicated
+        for (const tok of TokenizedExpression.trimWhitespacesAndRemoveComments(this.tokens)) {
             switch (state) {
                 case State.GetCommandOrEOF:
                     if (tok.type == TokenType.CmdSpecifier) {
@@ -100,6 +102,7 @@ export class TokenizedExpression {
                     break;
 
                 case State.GetArgumentsOrSpaceBeforeExpressionValue:
+                    // If the expression name is followed by a whitespace, expect the expression value. Otherwise, it should have a '(', indicating the expression accepts arguments
                     if (tok.type == TokenType.Whitespace) {
                         state = State.AccumulateExpressionValue;
                     } else if (tok.type == TokenType.OpeningParenthesis) {
@@ -186,5 +189,23 @@ export class TokenizedExpression {
         }
 
         return tokens.slice(startInd, endInd + 1);
+    }
+
+    public static trimWhitespacesAndRemoveComments(tokens: Token[]): Token[] {
+        let buf: Token[] = [];
+        let inComment = false;
+        for (let token of tokens) {
+            if (token.type == TokenType.CommentSpecifier) {
+                inComment = true;
+            } else if (inComment && token.type != TokenType.EOF) {
+                if (token.value == '\n') {
+                    inComment = false;
+                }
+            } else {
+                buf.push(token);
+            }
+        }
+
+        return TokenizedExpression.trimWhitespaces(buf);
     }
 }

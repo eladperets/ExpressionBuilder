@@ -13,24 +13,9 @@
 
 <body>
     <h1>String Expression Builder</h1>
-    <a href="https://github.com/eladperets/ExpressionBuilder">The source code can be found here</a><br>
+    <a href="https://github.com/eladperets/ExpressionBuilder">Source Code</a><br>
     <br>
-    Use this tool to build complex string expressions. The syntax is similiar to C macros.<br>
-    While it can have many uses, it was written to help with writing complex <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-functions">template functions</a> used in Azure Resource Manager and Azure Policy.<br>
-
-    <h2>Usage:</h2>
-    <ul>
-        <li>Define expressions using the #def command (<i>#def HI Hello</i>)</li>
-        <li>Expressions can refer to previously defined expressions (<i>#def HI_WORLD HI World</i>)</li>
-        <li>
-            The last command must be an #eval command that will evaluate the final expression:<br>
-            <ul>
-                <li>#eval can contain any free text.</li>
-                <li>#eval can refer to any of the previously defined expressions.</li>
-            </ul>
-        </li>
-      </ul>
-    <textarea id="input" rows="20" cols="150" spellcheck="false"></textarea>
+    <textarea id="input" rows="30" cols="150" spellcheck="false"></textarea>
     </br>
     <input id="evaluate" type="button" value="Evaluate">
     <input id="create_link" type="button" value="Create Link">
@@ -56,7 +41,7 @@
         if (urlParams.has('expression')) {
             document.getElementById('input').value = urlParams.get('expression');
         } else {
-            document.getElementById('input').value = "#def HI Hello\n#def HI_WORLD HI World\n\n#eval HI_WORLD!!"   
+            document.getElementById('input').value = "\/\/ Hello! Welcome to the expression builder!\r\n\/\/ This tool uses C-macro-like syntax to help generating complex strings with lots of repeated expressions.\r\n\r\n\/\/ Define expressions using the #def keyword, followed by expression name and expression value\r\n\/\/ - Expression names can have letters and underscores\r\n\/\/ - Expression values can contain newlines\r\n#def GREETING Hello\r\n\r\n\/\/ Expressions can also accept arguments. The expression value can refer to other expressions or the expression arguments\r\n#def GREET(NAME) GREETING NAME!\r\n\r\n\/\/ To build the final expression, use the #eval keyword followed by the expression to build.\r\n\/\/ - The expression to build can refer to any defined expression.\r\n\/\/ - Note that when calling an expression with arguments, the provided argument values can\'t have parenthesis or commas\r\n#eval GREET(World), and also: GREET(you)\r\n\r\n\/\/ Press \'Evalaute\' below. The output will be: \"Hello World!, and also: Hello you!\"\r\n\/\/ To create a shareable link, press \'Create Link\'"   
         }
     </script>
     <h3>Output:</h3>
