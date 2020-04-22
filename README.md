@@ -24,12 +24,14 @@ Pretty cool, right? with the expression builder we were able to:
 2. Re-use the same expressions more than once
 
 ## What's Next
-1. Support adding comments
-2. Support function-like macros
-3. Support some sort of looping
+1. Support some sort of looping
+2. Improve robustness
 
 ## Implementation
-The tool is written in TypeScript (which is not my go-to language, generally i'm not a frontend guy, so forgive my ugly code). It's compliled to js and is used in a single page app hosted on Azure storage account [here](https://armexpressions.z13.web.core.windows.net/).
+The tool is written in TypeScript (which is not my go-to language, generally i'm not a frontend guy, so forgive my ugly code).
+### Single page app
+The expression builder is available via a single page app hosted on Azure storage account [here](https://armexpressions.z13.web.core.windows.net/).  
+Code editor is a fork of [ACE](https://github.com/eladperets/ace) with an additional rule for the expression builder syntax. That's a crazy overkill, but it was the fastest way to make it work without require me to learn how things like webpack work- i'm trying to focus on the implementation, to the frontend stuff.
 
 ## Environment Setup
 (Works only in windows)

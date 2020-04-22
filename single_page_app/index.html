@@ -7,16 +7,35 @@
     <script type="module" src="lexer.js"></script>
     <script type="module" src="token.js"></script>
     <script type="module" src="expressionDefinition.js"></script>
-    <script type="module" src="ast.js"></script>
+    <script src="ace.js"></script>
+    <script src="mode-expressionbuilder.js"></script>
+    <script src="ext-language_tools.js"></script>
+    <script src="theme-cobalt.js"></script>
     <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 
 <body>
     <h1>String Expression Builder</h1>
     <a href="https://github.com/eladperets/ExpressionBuilder">Source Code</a><br>
-    <br>
-    <textarea id="input" rows="30" cols="150" spellcheck="false"></textarea>
-    </br>
+    <small>(Code editor is forked from <a href="https://github.com/ajaxorg/ace">https://github.com/ajaxorg/ace</a>)</small><br>
+    <div id="editor">// Hello! Welcome to the expression builder!
+// This tool uses C-macro-like syntax to help generating complex strings with lots of repeated expressions.
+
+// Define expressions using the #def keyword, followed by expression name and expression value
+// - Expression names can have letters and underscores
+// - Expression values can contain newlines
+#def GREETING Hello
+
+// Expressions can also accept arguments. The expression value can refer to other expressions or the expression arguments
+#def GREET(NAME) GREETING NAME!
+
+// To build the final expression, use the #eval keyword followed by the expression to build.
+// - The expression to build can refer to any defined expression.
+// - Note that when calling an expression with arguments, the provided argument values can't have parenthesis or commas
+#eval GREET(World), and also: GREET(you)
+
+// Press 'Evalaute' below. The output will be: "Hello World!, and also: Hello you!"
+// To create a shareable link, press 'Create Link'</div>
     <input id="evaluate" type="button" value="Evaluate">
     <input id="create_link" type="button" value="Create Link">
     <script type="module">
@@ -24,28 +43,46 @@
         import { ParsedExpressionDefinitions } from './expressionDefinition.js'
         import { TokenizedExpression } from './token.js'
         import { Lexer } from './lexer.js'
-        
-        function setEvaluatedExpression() {
-            var rawInput = document.getElementById('input').value;
+
+        // Editor setup
+        var editor = ace.edit("editor");
+        editor.setShowPrintMargin(false);
+        editor.setTheme("ace/theme/cobalt");
+        editor.session.setMode("ace/mode/expressionbuilder");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            fontSize: "10pt"
+        });
+
+        var langTools = ace.require("ace/ext/language_tools");
+        var completer = {
+            getCompletions: function(editor, session, pos, prefix, callback) {
+                var definitions = Lexer.Tokenize(editor.getValue()).toExpressionDefinitions(true);
+                callback(null, definitions.autoCompleteOptions(prefix));
+            }
+        }
+
+        langTools.setCompleters([completer]);
+
+        // Listeners
+        document.getElementById('evaluate').onclick = function() {
+            var rawInput = editor.getValue();
             document.getElementById('output').innerText = Lexer.Tokenize(rawInput).toExpressionDefinitions().toAST().evaluate();
-        }
+        };
 
-        function createLink() {
-            document.getElementById('output').innerText = document.URL.split('?')[0] + '?expression=' + encodeURIComponent(document.getElementById('input').value);
-        }
+        document.getElementById('create_link').onclick = function() {
+            document.getElementById('output').innerText = document.URL.split('?')[0] + '?expression=' + encodeURIComponent(editor.getValue());
+        };
 
-        document.getElementById('evaluate').onclick = setEvaluatedExpression;
-        document.getElementById('create_link').onclick = createLink;
-
+        // Get expressions provided by the URL
         var urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('expression')) {
-            document.getElementById('input').value = urlParams.get('expression');
-        } else {
-            document.getElementById('input').value = "\/\/ Hello! Welcome to the expression builder!\r\n\/\/ This tool uses C-macro-like syntax to help generating complex strings with lots of repeated expressions.\r\n\r\n\/\/ Define expressions using the #def keyword, followed by expression name and expression value\r\n\/\/ - Expression names can have letters and underscores\r\n\/\/ - Expression values can contain newlines\r\n#def GREETING Hello\r\n\r\n\/\/ Expressions can also accept arguments. The expression value can refer to other expressions or the expression arguments\r\n#def GREET(NAME) GREETING NAME!\r\n\r\n\/\/ To build the final expression, use the #eval keyword followed by the expression to build.\r\n\/\/ - The expression to build can refer to any defined expression.\r\n\/\/ - Note that when calling an expression with arguments, the provided argument values can\'t have parenthesis or commas\r\n#eval GREET(World), and also: GREET(you)\r\n\r\n\/\/ Press \'Evalaute\' below. The output will be: \"Hello World!, and also: Hello you!\"\r\n\/\/ To create a shareable link, press \'Create Link\'"   
+            editor.setValue(urlParams.get('expression'));
+            editor.clearSelection();
         }
     </script>
     <h3>Output:</h3>
-    <pre id="output" style="min-height:5em;border-style:solid;overflow-x:auto;"></pre>
+    <pre id="output"></pre>
 </body>
 
 </html>

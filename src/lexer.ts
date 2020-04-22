@@ -43,6 +43,8 @@ export class Lexer {
                     else {
                         buf.push('/');
                     }
+                    
+                    // caution: break is omitted intentionally
                 default:
                     // Chars that are not letters\numbers\underscore are stoered in a token of their own (mainly cause i'm lazy).
                     if (!stringReader.isFinished() && !/[a-zA-Z0-9_]/.test(stringReader.peekNext())) {

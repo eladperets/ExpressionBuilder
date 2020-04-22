@@ -26,6 +26,19 @@ export class ParsedExpressionDefinitions {
         this.expressions = expressions;
     }
 
+    // Changing this method will break auto-complete in the single page app
+    public autoCompleteOptions(prefix: string): object {
+        return this.expressions
+            .filter(e => e.cmd == 'def' && e.name.startsWith(prefix))
+            .map((e) => {
+                if (e.args.length == 0) {
+                    return { caption: e.name, value: e.name, meta: "Expression definition" };
+                }
+
+                return { caption: e.name + '(' + e.args.join(',') + ')', value: e.name, meta: "Expression definition" }
+            });
+    }
+
     public toAST(): Expression {
         const definitions = new Map(this.expressions.filter(e => e.cmd == 'def').map(e => [e.name, e]));
         const evalExpressions = this.expressions.filter(e => e.cmd == 'eval');
