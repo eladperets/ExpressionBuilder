@@ -1,4 +1,16 @@
 body {
 	font-family: Helvetica, sans-serif;
-	background-color: lightgrey;
+	background-color: rgb(160, 187, 218);
+}
+#editor {
+	position: relative;
+	width: 70%;
+	height: 30em;
+}
+#output {
+	position: relative;
+	width: 70%;
+	min-height: 5em;
+	border-style: solid;
+	overflow-x: auto;
 }
